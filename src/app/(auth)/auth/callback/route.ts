@@ -11,8 +11,8 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = createClient();
-    const { data: sessionData, error: sessionError } =
-      await supabase.auth.exchangeCodeForSession(code);
+    const { data: sessionData, error: sessionError } = await supabase.auth
+      .exchangeCodeForSession(code);
 
     if (!sessionError) {
       // if the user doesn't have profile data yet, send them to the onboarding page
@@ -23,12 +23,12 @@ export async function GET(request: Request) {
 
       if (profiles?.length === 0) {
         next = "/onboarding/profile";
-        const {  } = await supabase
+        const {} = await supabase
           .from("profiles")
           .insert([
             {
               user_id: sessionData.user.id,
-              // profile_image_url: sessionData.user.user_metadata.avatar_url,
+              profile_image_url: sessionData.user.user_metadata.avatar_url,
               // name: sessionData.user.user_metadata.full_name,
             },
           ])
@@ -51,8 +51,10 @@ export async function GET(request: Request) {
 
   // return the user to an error page with instructions
   return NextResponse.redirect(
-    `${origin}/login?message=${encodeURIComponent(
-      "Login failed. Please try again."
-    )}`
+    `${origin}/login?message=${
+      encodeURIComponent(
+        "Login failed. Please try again.",
+      )
+    }`,
   );
 }

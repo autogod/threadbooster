@@ -13,19 +13,128 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          profile_image_url: string | null
           user_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
+          profile_image_url?: string | null
           user_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
+          profile_image_url?: string | null
           user_id?: string | null
         }
         Relationships: []
+      }
+      projects: {
+        Row: {
+          created_at: string
+          id: string
+          owner_profile_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          owner_profile_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          owner_profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_owner_profile_id_fkey"
+            columns: ["owner_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      thread_posts: {
+        Row: {
+          abstract: string | null
+          content: string | null
+          created_at: string
+          id: string
+          likes: number | null
+          memo: string | null
+          parent_post_id: string | null
+          status: Database["public"]["Enums"]["THREAD_POST_STATUS"] | null
+          thead_id: string | null
+        }
+        Insert: {
+          abstract?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          likes?: number | null
+          memo?: string | null
+          parent_post_id?: string | null
+          status?: Database["public"]["Enums"]["THREAD_POST_STATUS"] | null
+          thead_id?: string | null
+        }
+        Update: {
+          abstract?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          likes?: number | null
+          memo?: string | null
+          parent_post_id?: string | null
+          status?: Database["public"]["Enums"]["THREAD_POST_STATUS"] | null
+          thead_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "thread_posts_parent_post_id_fkey"
+            columns: ["parent_post_id"]
+            isOneToOne: false
+            referencedRelation: "thread_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thread_posts_thead_id_fkey"
+            columns: ["thead_id"]
+            isOneToOne: false
+            referencedRelation: "threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      threads: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: string | null
+          slug: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id?: string | null
+          slug?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: string | null
+          slug?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "threads_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -35,7 +144,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      THREAD_POST_STATUS: "MEMO" | "DRAFT" | "COMPLETE"
     }
     CompositeTypes: {
       [_ in never]: never
