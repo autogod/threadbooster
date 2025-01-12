@@ -23,7 +23,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "스레드부스터ㅇㅇㅇ",
+  title: "스레드부스터",
   description: "스레드부스터",
 };
 

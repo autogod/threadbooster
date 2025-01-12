@@ -1,0 +1,243 @@
+폴더 PATH의 목록입니다.
+볼륨 일련 번호는 D42D-DE20입니다.
+C:\USERS\KJJKJ\ONEDRIVE\바탕 화면\STUDY\THREADBOOSTER\SRC
+|   middleware.ts
+|   
++---app
+|   |   favicon.ico
+|   |   globals.css
+|   |   layout.tsx
+|   |   
+|   +---(auth)
+|   |   |   actions.ts
+|   |   |   layout.tsx
+|   |   |   oauth-signin.tsx
+|   |   |   
+|   |   +---auth
+|   |   |   +---callback
+|   |   |   |       route.ts
+|   |   |   |       
+|   |   |   \---confirm
+|   |   |           route.ts
+|   |   |           
+|   |   +---email-verification
+|   |   |       page.tsx
+|   |   |       
+|   |   +---login
+|   |   |       page.tsx
+|   |   |       
+|   |   \---register
+|   |           page.tsx
+|   |           
+|   +---(dashboard)
+|   |   |   layout.tsx
+|   |   |   
+|   |   \---[project_id]
+|   |           page.tsx
+|   |           
+|   +---(marketing)
+|   |   |   layout.tsx
+|   |   |   page.tsx
+|   |   |   
+|   |   +---blog
+|   |   |       page.tsx
+|   |   |       
+|   |   +---guide
+|   |   |       page.tsx
+|   |   |       
+|   |   \---resource
+|   |           page.tsx
+|   |           
+|   +---(setting)
+|   |   |   layout.tsx
+|   |   |   
+|   |   +---account
+|   |   |       page.tsx
+|   |   |       
+|   |   +---privacy
+|   |   |       page.tsx
+|   |   |       
+|   |   +---profile
+|   |   |       page.tsx
+|   |   |       
+|   |   +---subscription
+|   |   |       page.tsx
+|   |   |       
+|   |   \---terms
+|   |           page.tsx
+|   |           
+|   +---fonts
+|   |       GeistMonoVF.woff
+|   |       GeistVF.woff
+|   |       
+|   \---onboarding
+|       |   layout.tsx
+|       |   
+|       +---marketing
+|       |       page.tsx
+|       |       
+|       +---profile
+|       |       page.tsx
+|       |       
+|       \---tutorial
+|               page.tsx
+|               
++---components
+|   |   provider.tsx
+|   |   theme-provider.tsx
+|   |   
+|   +---custom-ui
+|   |       app-sidebar.tsx
+|   |       mode-toggle.tsx
+|   |       nav-header-with-trigger.tsx
+|   |       nav-projects.tsx
+|   |       nav-user.tsx
+|   |       project-switcher.tsx
+|   |       
+|   +---icon
+|   |       google.tsx
+|   |       index.tsx
+|   |       
+|   \---ui
+|           accordion.tsx
+|           alert-dialog.tsx
+|           alert.tsx
+|           aspect-ratio.tsx
+|           avatar.tsx
+|           badge.tsx
+|           breadcrumb.tsx
+|           button.tsx
+|           calendar.tsx
+|           card.tsx
+|           carousel.tsx
+|           chart.tsx
+|           checkbox.tsx
+|           collapsible.tsx
+|           command.tsx
+|           context-menu.tsx
+|           dialog.tsx
+|           drawer.tsx
+|           dropdown-menu.tsx
+|           form.tsx
+|           hover-card.tsx
+|           input-otp.tsx
+|           input.tsx
+|           label.tsx
+|           menubar.tsx
+|           navigation-menu.tsx
+|           pagination.tsx
+|           popover.tsx
+|           progress.tsx
+|           radio-group.tsx
+|           resizable.tsx
+|           scroll-area.tsx
+|           select.tsx
+|           separator.tsx
+|           sheet.tsx
+|           sidebar.tsx
+|           skeleton.tsx
+|           slider.tsx
+|           sonner.tsx
+|           switch.tsx
+|           table.tsx
+|           tabs.tsx
+|           textarea.tsx
+|           toast.tsx
+|           toaster.tsx
+|           toggle-group.tsx
+|           toggle.tsx
+|           tooltip.tsx
+|           
++---features
+|   +---ai
+|   |   +---actions
+|   |   |       write-abstract.ts
+|   |   |       
+|   |   +---atoms
+|   |   |       state.ts
+|   |   |       
+|   |   +---components
+|   |   |       test.tsx
+|   |   |       
+|   |   +---hooks
+|   |   |       test.tsx
+|   |   |       
+|   |   +---queries
+|   |   |       test.ts
+|   |   |       
+|   |   +---types
+|   |   |       types.ts
+|   |   |       
+|   |   \---utils
+|   |           test.ts
+|   |           
+|   +---common
+|   |   +---actions
+|   |   |       get-profile.ts
+|   |   |       
+|   |   +---atoms
+|   |   |       state.ts
+|   |   |       
+|   |   +---components
+|   |   |       test.tsx
+|   |   |       
+|   |   +---hooks
+|   |   |       use-logged-in-user.tsx
+|   |   |       
+|   |   +---queries
+|   |   |       test.ts
+|   |   |       
+|   |   +---types
+|   |   |       types.ts
+|   |   |       
+|   |   \---utils
+|   |           test.ts
+|   |           
+|   \---projects
+|       +---actions
+|       |       add-project.ts
+|       |       fetch-projects.ts
+|       |       update-project.ts
+|       |       
+|       +---atoms
+|       |       state.ts
+|       |       
+|       +---components
+|       |       test.tsx
+|       |       
+|       +---hooks
+|       |       test.tsx
+|       |       
+|       +---queries
+|       |       define-add-project.ts
+|       |       define-fetch-projects.ts
+|       |       define-update-project.ts
+|       |       
+|       +---types
+|       |       test.ts
+|       |       
+|       \---utils
+|               test.ts
+|               
++---hooks
+|       use-mobile.tsx
+|       use-toast.ts
+|       
++---lib
+|       utils.ts
+|       
++---types
+|       database.types.ts
+|       supabase.ts
+|       
+\---utils
+    |   helpers.ts
+    |   
+    +---shadcn
+    |       utils.ts
+    |       
+    \---supabase
+            browser.ts
+            middleware.ts
+            server.ts
+            
