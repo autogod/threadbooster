@@ -1,9 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useRecoilValue } from "recoil";
-import { currentProjectAtom } from "@/features/common/atoms/state";
 import { useLoggedInUser } from "@/features/common/hooks/use-logged-in-user";
 
 // import { fetchProjects } from "@/features/projects/actions/fetch-projects";
@@ -19,7 +16,6 @@ import {
   Settings,
 } from "lucide-react";
 import { NavUser } from "./nav-user";
-import { ProjectSwitcher } from "./project-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -94,7 +90,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // console.log("loggedInUser", loggedInUser);
   if (!loggedInUser) return null;
   return (
-    <Sidebar variant="inset" collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>THREAD BOOSTER</SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
