@@ -44,6 +44,7 @@ export default async function Layout({
 
   return (
     <html lang="ko">
+      {/* <Providers> */}
       <Providers loggedInUser={loggedInUser}>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}

@@ -7,11 +7,11 @@ import {
 } from "@/features/thread/queries/define-fetch-threads";
 
 export async function fetchThread({
-  threadId,
+  profileId,
 }: {
-  threadId: string;
+  profileId: string;
 }): Promise<FetchThreads> {
-  const { data, error } = await defineFetchThreadsQuery(threadId);
+  const { data, error } = await defineFetchThreadsQuery(profileId);
 
   if (error) {
     console.error("Error fetching thread:", error);

@@ -85,10 +85,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const loggedInUser = useLoggedInUser();
+  const loggedInUserString = localStorage.getItem("loggedInUser");
 
   // console.log("loggedInUser", loggedInUser);
-  if (!loggedInUser) return null;
+  if (!loggedInUserString) return null;
+
+  const loggedInUser = JSON.parse(loggedInUserString);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>THREAD BOOSTER</SidebarHeader>
