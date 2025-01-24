@@ -94,8 +94,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // console.log("loggedInUser", loggedInUser);
   if (!loggedInUser) return null;
   return (
-    <Sidebar variant="inset" collapsible="icon" {...props}>
-      <SidebarHeader>THREAD BOOSTER</SidebarHeader>
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+        <SidebarMenuButton
+          asChild
+          tooltip="스레드 관리"
+          isActive={pathname.includes("/thread")}
+        >
+          <button onClick={() => router.push(`/thread`)}>
+            <ChartBarDecreasing />
+            THREAD BOOSTER
+          </button>
+        </SidebarMenuButton>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>스레드 관리</SidebarGroupLabel>
