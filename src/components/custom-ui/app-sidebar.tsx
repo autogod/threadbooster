@@ -89,93 +89,42 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Recoil에서 현재 선택된 프로젝트
-  const currentProject = useRecoilValue(currentProjectAtom);
-
-  const [projects, setProjects] = useState<Project[]>([]);
   const loggedInUser = useLoggedInUser();
 
-  useEffect(() => {
-    const _fetchProjects = async () => {
-      if (!loggedInUser) return;
-      // const _projects = await fetchProjects(loggedInUser.profile.id);
-      const _projects = [
-        {
-          name: "프로젝트1",
-          logo: Frame,
-          url: "/project1",
-          slug: "project1",
-        },
-        {
-          name: "프로젝트2",
-          logo: Users,
-          url: "/project2",
-          slug: "project2",
-        },
-      ];
-      setProjects(
-        _projects.map((project) => {
-          const basePath = pathname.split("/").slice(1).join("/");
-
-          const newPath = `/${project.slug}/${basePath
-            .split("/")
-            .slice(1)
-            .join("/")}`;
-
-          return {
-            name: project.name,
-            logo: Frame,
-            url: newPath,
-            slug: project.slug,
-            isActive: pathname.includes(project.slug),
-          };
-        })
-      );
-    };
-    _fetchProjects();
-  }, [loggedInUser, pathname]);
-
-  // Determine the current project
-  // const currentProject =
-  //   pathname === "/blogs" || pathname === "/keyword"
-  //     ? projects[0]
-  //     : projects.find((project) => pathname.includes(`/${project.slug}`)) ||
-  //       projects[0];
-  console.log("loggedInUser", loggedInUser);
+  // console.log("loggedInUser", loggedInUser);
   if (!loggedInUser) return null;
   return (
     <Sidebar variant="inset" collapsible="icon" {...props}>
-      <SidebarHeader>
-        <ProjectSwitcher
-          projects={projects}
-          profileId={loggedInUser.profile.id}
-        />
-      </SidebarHeader>
+      <SidebarHeader>THREAD BOOSTER</SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>스레드 관리</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {data.projectSetting.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip={item.title}
-                    isActive={pathname.includes(item.url)}
-                  >
-                    <button
-                      onClick={() => {
-                        if (currentProject) {
-                          router.push(`/${currentProject.slug}${item.url}`);
-                        }
-                      }}
-                    >
-                      {item.icon && <item.icon />}
-                      {item.title}
-                    </button>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  tooltip="스레드 관리"
+                  isActive={pathname.includes("/thread")}
+                >
+                  <button onClick={() => router.push(`/thread`)}>
+                    <ChartBarDecreasing />
+                    스레드 관리
+                  </button>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  tooltip="AI 스레드 작성"
+                  isActive={pathname.includes("/thread/writing")}
+                >
+                  <button onClick={() => router.push(`/thread/writing`)}>
+                    <ChartBarDecreasing />
+                    AI 스레드 작성
+                  </button>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

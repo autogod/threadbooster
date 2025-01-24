@@ -1,15 +1,19 @@
-import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import localFont from "next/font/local";
 import "../globals.css";
+// components
+import localFont from "next/font/local";
+import type { Metadata } from "next";
 import { Providers } from "@/components/provider";
-import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
-import { NavHeaderWithTrigger } from "@/components/custom-ui/nav-header-with-trigger";
-import { AppSidebar } from "@/components/custom-ui/app-sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { LoggedInUser } from "@/features/common/types/types";
+import { AppSidebar } from "@/components/custom-ui/app-sidebar";
+import { NavHeaderWithTrigger } from "@/components/custom-ui/nav-header-with-trigger";
+// utils
+import { redirect } from "next/navigation";
+// actions
 import { getProfileData } from "@/features/common/actions/get-profile";
+// types
+import { LoggedInUser } from "@/features/common/types/types";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -23,7 +27,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "스레드부스터ㅇㅇㅇ",
+  title: "스레드부스터",
   description: "스레드부스터",
 };
 
@@ -52,15 +56,15 @@ export default async function Layout({
           >
             <SidebarProvider className="h-full">
               <AppSidebar />
-              <SidebarInset className="flex flex-col bg-background">
-                <header className="sticky top-0 z-50 bg-background p-4 pb-0">
+              <div className="flex flex-col h-full w-full bg-background ">
+                <header className="sticky top-0 z-50 p-4 pb-0">
                   <NavHeaderWithTrigger />
                 </header>
                 <main className="overflow-auto flex flex-1 p-4">
                   {children}
                   <Toaster />
                 </main>
-              </SidebarInset>
+              </div>
             </SidebarProvider>
           </ThemeProvider>
         </body>
