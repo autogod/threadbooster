@@ -4,11 +4,11 @@ import { createClient } from "@/utils/supabase/server";
 /**
  * Define the query to fetch a project
  * @param  - The ID of profile to fetch the project for
- * @returns Supabase query to fetch the project
+ * @returns Supabase query to fetch the thread
  */
-export const defineFetchProjectQuery = async (profileId: string) => {
+export const defineFetchThreadsQuery = (profileId: string) => {
   const query = createClient()
-    .from("projects")
+    .from("threads")
     .select("*")
     .eq("owner_profile_id", profileId);
 
@@ -16,6 +16,6 @@ export const defineFetchProjectQuery = async (profileId: string) => {
 };
 
 // Type for the query result
-export type FetchProject = QueryData<
-  ReturnType<typeof defineFetchProjectQuery>
+export type FetchThreads = QueryData<
+  ReturnType<typeof defineFetchThreadsQuery>
 >;
