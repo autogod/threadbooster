@@ -61,7 +61,10 @@ export default async function Layout({
                 <header className="sticky top-0 z-50 p-4 pb-0">
                   <NavHeaderWithTrigger />
                 </header>
-                <section className="overflow-auto flex flex-1 p-4">
+                <section
+                  className="overflow-auto flex flex-1 p-4"
+                  // style={{ backgroundColor: "red" }}
+                >
                   {children}
                   <Toaster />
                 </section>
