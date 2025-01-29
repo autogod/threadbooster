@@ -44,6 +44,7 @@ export default async function Layout({
 
   return (
     <html lang="ko">
+      {/* <Providers> */}
       <Providers loggedInUser={loggedInUser}>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -56,15 +57,15 @@ export default async function Layout({
           >
             <SidebarProvider className="h-full">
               <AppSidebar />
-              <div className="flex flex-col h-full w-full bg-background ">
+              <main className="flex flex-col h-full w-full bg-background ">
                 <header className="sticky top-0 z-50 p-4 pb-0">
                   <NavHeaderWithTrigger />
                 </header>
-                <main className="overflow-auto flex flex-1 p-4">
+                <section className="overflow-auto flex flex-1 p-4">
                   {children}
                   <Toaster />
-                </main>
-              </div>
+                </section>
+              </main>
             </SidebarProvider>
           </ThemeProvider>
         </body>

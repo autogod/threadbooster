@@ -111,27 +111,42 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          project_id: string | null
-          slug: string | null
+          owner_profile_id: string
+          slug: string
+          thread_access_token: string | null
+          thread_access_token_expired_at: string | null
+          thread_long_lived_token: string | null
+          thread_metadata: Json
+          thread_user_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
-          project_id?: string | null
-          slug?: string | null
+          owner_profile_id: string
+          slug: string
+          thread_access_token?: string | null
+          thread_access_token_expired_at?: string | null
+          thread_long_lived_token?: string | null
+          thread_metadata: Json
+          thread_user_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
-          project_id?: string | null
-          slug?: string | null
+          owner_profile_id?: string
+          slug?: string
+          thread_access_token?: string | null
+          thread_access_token_expired_at?: string | null
+          thread_long_lived_token?: string | null
+          thread_metadata?: Json
+          thread_user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "threads_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: "threads_owner_profile_id_fkey"
+            columns: ["owner_profile_id"]
             isOneToOne: false
-            referencedRelation: "projects"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

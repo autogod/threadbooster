@@ -1,9 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useRecoilValue } from "recoil";
-import { currentProjectAtom } from "@/features/common/atoms/state";
 import { useLoggedInUser } from "@/features/common/hooks/use-logged-in-user";
 
 // import { fetchProjects } from "@/features/projects/actions/fetch-projects";
@@ -19,7 +16,6 @@ import {
   Settings,
 } from "lucide-react";
 import { NavUser } from "./nav-user";
-import { ProjectSwitcher } from "./project-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -89,24 +85,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const loggedInUser = useLoggedInUser();
+  const loggedInUserString = localStorage.getItem("loggedInUser");
 
   // console.log("loggedInUser", loggedInUser);
-  if (!loggedInUser) return null;
+  if (!loggedInUserString) return null;
+
+  const loggedInUser = JSON.parse(loggedInUserString);
+
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <SidebarMenuButton
-          asChild
-          tooltip="스레드 관리"
-          isActive={pathname.includes("/thread")}
-        >
-          <button onClick={() => router.push(`/thread`)}>
-            <ChartBarDecreasing />
-            THREAD BOOSTER
-          </button>
-        </SidebarMenuButton>
-      </SidebarHeader>
+      <SidebarHeader>THREAD BOOSTER</SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>스레드 관리</SidebarGroupLabel>
