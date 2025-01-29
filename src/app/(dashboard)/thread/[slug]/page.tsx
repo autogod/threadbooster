@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-// /thread/:slug
-
-// - 스레드 계정 리스트업
-=======
 "use client";
 
 import { useEffect, useState } from "react";
@@ -15,7 +10,6 @@ import {
   TableCell,
 } from "../../../../components/ui/table";
 
->>>>>>> 0.1.0-jg
 export default function Page() {
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
