@@ -9,77 +9,83 @@ import {
   TableRow,
   TableCell,
 } from "../../../../components/ui/table";
+import { fetchThreadPosts } from "@/features/thread/actions/fetch-thread-posts";
 
-export default function Page() {
-  const [threads, setThreads] = useState([]);
+export default function Page({ params }) {
+  console.log("Params:", params);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [posts, setPosts] = useState([]); // `posts`로 변수명 변경
+
+  const { slug } = params;
+  console.log("Slug:", slug);
 
   useEffect(() => {
-    const fetchThreads = async () => {
-      try {
-        const response = await fetch(
-          "https://graph.threads.net/v1.0/me/threads?fields=id,permalink,owner,username,text,timestamp,shortcode,thumbnail_url,children,is_quote_post&access_token=THAAQFWBJ1Y0BBYlhtR0VQTzJRb3BYWXpKcVFJbWtKcGdleWtOVk9kS3RLZAGowdmZANcG5FTEhGeUItTXR0YlV0ZAUFFaGltWTJQdlpGdW9HTWtQNm9TVndjS2VCTzJ4Q0N5eWc3R2VaR1g0Nkp1YnQ4VHVTdkdTeWpadWhtRnV1bnlEajVvS0kyS2o4bFp3UlkZD"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch threads");
-        }
-        const data = await response.json();
-        setThreads(data.data || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!slug) {
+      setError("Invalid thread user ID");
+      setLoading(false);
+      return;
+    }
 
-    fetchThreads();
-  }, []);
+    fetchThreadPosts({ thread_user_id: slug })
+      .then((data) => {
+        console.log("Fetched data:", data);
+        setPosts(data || []);
+      })
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [slug]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
     <main className="min-h-screen w-full flex flex-col items-center p-4">
-      <h1 className="text-xl font-bold mb-4">스레드 계정 리스트업</h1>
-      <div className="w-full  overflow-x-auto">
+      <h1 className="text-xl font-bold mb-4">스레드 게시글 리스트</h1>
+      <div className="w-full overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[60%]">Text</TableHead>
-              <TableHead className="w-[10%]">Timestamp</TableHead>
-              <TableHead className="w-[10%]">Thumbnail</TableHead>
-              <TableHead className="w-[10%]">Link</TableHead>
+              <TableHead className="w-[40%]">Content</TableHead>
+              <TableHead className="w-[15%]">Created At</TableHead>
+              <TableHead className="w-[10%]">Status</TableHead>
+              <TableHead className="w-[10%]">Likes</TableHead>
+              <TableHead className="w-[15%]">Memo</TableHead>
+              <TableHead className="w-[10%]">Parent Post ID</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {threads.map((thread) => (
-              <TableRow key={thread.id}>
-                <TableCell className="w-[60%]">{thread.text}</TableCell>
-                <TableCell className="w-[10%]">
-                  {new Date(thread.timestamp).toISOString().split("T")[0]}
-                </TableCell>
-                <TableCell className="w-[10%]">
-                  {thread.thumbnail_url && (
-                    <img
-                      src={thread.thumbnail_url}
-                      alt="Thumbnail"
-                      className="w-16 h-16"
-                    />
-                  )}
-                </TableCell>
-                <TableCell className="w-[10%]">
-                  <a
-                    href={thread.permalink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500"
-                  >
-                    View
-                  </a>
+            {posts.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center">
+                  No posts found.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              posts.map((post) => (
+                <TableRow key={post.id}>
+                  <TableCell className="w-[40%]">
+                    {post.content || "No content"}
+                  </TableCell>
+                  <TableCell className="w-[15%]">
+                    {new Date(post.created_at).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell className="w-[10%]">{post.status}</TableCell>
+                  <TableCell className="w-[10%]">{post.likes || 0}</TableCell>
+                  <TableCell className="w-[15%]">
+                    {post.memo || "N/A"}
+                  </TableCell>
+                  <TableCell className="w-[10%]">
+                    {post.parent_post_id ? post.parent_post_id : "None"}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
