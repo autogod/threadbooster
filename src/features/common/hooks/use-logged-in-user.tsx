@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import { loggedInUserAtom } from "@/features/common/atoms/state";
 import { LoggedInUser } from "@/features/common/types/types";

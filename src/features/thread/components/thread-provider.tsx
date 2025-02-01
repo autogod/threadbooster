@@ -1,55 +1,68 @@
 "use client";
 
-// hooks
-import React, { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation"; // useSearchParams 사용
+import React, { useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useThreadAuth } from "@/features/thread/hooks/use-thread-auth";
-// components
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function ThreadProvider() {
-  const searchParams = useSearchParams(); // 쿼리스트링 가져오기
-  const code = searchParams.get("code"); // ?code= 값 가져오기
+  const searchParams = useSearchParams();
+  const code = searchParams.get("code");
   const router = useRouter();
-  const { setAccessToken, isLoading, error, threadProfile } = useThreadAuth();
+  const { setAccessToken, isLoading, error } = useThreadAuth();
 
-  console.log("Code from URL:", code); // 이제 undefined가 아니라 값이 나와야 함
+  console.log("Code from URL:", code);
 
-  useEffect(() => {
-    const updateToken = async () => {
-      if (!code) {
-        console.warn("Code not found. Redirecting to /thread...");
-        router.push("/thread");
-        return;
-      }
-
+  const updateToken = useCallback(
+    async (code: string) => {
       try {
         console.log("setting access token...");
-        await setAccessToken(code);
+        const threadProfile = await setAccessToken(code);
 
+        // Check if threadProfile is updated.
         if (threadProfile?.username) {
           console.log("Access token updated successfully. Redirecting...");
-          router.push(`/thread/${threadProfile.username}`); // username 기반으로 리다이렉션
+          router.push(`/thread/${threadProfile.username}`);
         } else {
           console.warn("Profile username not found. Redirecting to /thread...");
-          // router.push("/thread");
+          router.push("/thread");
         }
       } catch (err) {
         console.error("Error updating access token:", err);
-        // router.push("/thread/error");
+        router.push("/thread/error"); // Redirect on error if desired.
       }
-    };
+    },
+    [router, setAccessToken]
+  );
 
-    updateToken();
-  }, [code, setAccessToken, threadProfile, router]);
+  useEffect(() => {
+    if (!code) {
+      console.warn("Code not found. Redirecting to /thread...");
+      router.push("/thread");
+      return;
+    }
+    updateToken(code);
+  }, [code, router]);
 
   if (isLoading)
     return (
       <div className="flex flex-col items-center justify-center h-screen">
-        <Skeleton className="h-8 w-48 rounded-lg mb-4" /> {/* 제목 */}
-        <Skeleton className="h-6 w-64 rounded-lg mb-2" /> {/* 부제목 */}
-        <Skeleton className="h-12 w-12 rounded-full" /> {/* 로딩 아이콘 */}
+        <Skeleton className="h-8 w-48 rounded-lg mb-4" />
+        <Skeleton className="h-6 w-64 rounded-lg mb-2" />
+        <Skeleton className="h-12 w-12 rounded-full" />
       </div>
     );
-  if (error) return <div>Error: {error}</div>;
+
+  // Render the error message correctly by extracting a string.
+  if (error) {
+    const errorMessage =
+      typeof error === "string"
+        ? error
+        : (error as { message: string })?.message || "Unknown error";
+
+    return <div>Error: {errorMessage}</div>;
+  }
+
+  // Optionally, you might return null or a placeholder if everything is done.
+  return null;
 }

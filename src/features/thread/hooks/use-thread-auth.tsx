@@ -2,31 +2,29 @@
 
 // hooks
 import React, { useEffect, useState, useCallback } from "react";
-import { useRecoilState } from "recoil";
 // actions
 import { getThreadAccessToken } from "@/features/thread/actions/get-thread-access-token";
 import { fetchThreadByUserId } from "@/features/thread/actions/fetch-thread-by-user-id";
 import { getThreadProfile } from "@/features/thread/actions/get-thread-profile";
 import { updateThread } from "@/features/thread/actions/update-threads";
 import { addThread } from "@/features/thread/actions/add-threads";
-// atoms
-import { threadProfileAtom } from "@/features/thread/atoms/state";
 // types
 import { ThreadsProfile } from "@/features/thread/actions/get-thread-profile";
 
 type UseThreadAuthResult = {
   isLoading: boolean;
   error: string | null;
-  setAccessToken: (code: string) => Promise<void>;
+  setAccessToken: (code: string) => Promise<ThreadsProfile | undefined>;
   checkAccessTokenExpiry: (userId: string) => Promise<boolean>;
-  threadProfile: ThreadsProfile | null;
+  // threadProfile: ThreadsProfile | null;
 };
 
 export function useThreadAuth(): UseThreadAuthResult {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // const [profile, setProfile] = useState<ThreadsProfile | null>(null);
-  const [threadProfile, setThreadProfile] = useRecoilState(threadProfileAtom);
+  const [threadProfile, setThreadProfile] = useState<ThreadsProfile | null>(
+    null
+  );
 
   /**
    * Update Access Token
@@ -103,6 +101,7 @@ export function useThreadAuth(): UseThreadAuthResult {
       localStorage.setItem("thread_access_token_expiry", tokenExpiry);
 
       console.log("Access token and thread data updated successfully.");
+      return threadProfile;
     } catch (err) {
       console.error("Error during updateAccessToken:", err);
       setError(
@@ -165,6 +164,5 @@ export function useThreadAuth(): UseThreadAuthResult {
     error,
     setAccessToken,
     checkAccessTokenExpiry,
-    threadProfile,
   };
 }
