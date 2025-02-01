@@ -65,8 +65,9 @@ export type Database = {
           likes: number | null
           memo: string | null
           parent_post_id: string | null
+          raw_data: Json | null
           status: Database["public"]["Enums"]["THREAD_POST_STATUS"] | null
-          thead_id: string | null
+          thread_id: string | null
         }
         Insert: {
           abstract?: string | null
@@ -76,8 +77,9 @@ export type Database = {
           likes?: number | null
           memo?: string | null
           parent_post_id?: string | null
+          raw_data?: Json | null
           status?: Database["public"]["Enums"]["THREAD_POST_STATUS"] | null
-          thead_id?: string | null
+          thread_id?: string | null
         }
         Update: {
           abstract?: string | null
@@ -87,8 +89,9 @@ export type Database = {
           likes?: number | null
           memo?: string | null
           parent_post_id?: string | null
+          raw_data?: Json | null
           status?: Database["public"]["Enums"]["THREAD_POST_STATUS"] | null
-          thead_id?: string | null
+          thread_id?: string | null
         }
         Relationships: [
           {
@@ -99,8 +102,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "thread_posts_thead_id_fkey"
-            columns: ["thead_id"]
+            foreignKeyName: "thread_posts_thread_id_fkey"
+            columns: ["thread_id"]
             isOneToOne: false
             referencedRelation: "threads"
             referencedColumns: ["id"]

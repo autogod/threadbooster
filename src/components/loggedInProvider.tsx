@@ -20,6 +20,7 @@ export function LoggedInProviders({ children, loggedInUser }: ProvidersProps) {
   const setLoggedInUser = useSetRecoilState(loggedInUserAtom);
   // Save `loggedInUser` to localStorage when provided
   useEffect(() => {
+    console.log("loggedInUser", loggedInUser);
     if (loggedInUser) {
       // localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
       setLoggedInUser(loggedInUser);

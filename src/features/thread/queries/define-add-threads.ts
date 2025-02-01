@@ -13,7 +13,8 @@ export const defineAddThreadQuery = (
   const query = createClient()
     .from("threads")
     .insert(newThreadData)
-    .select("*"); // Insert 후 변경된 로우 반환
+    .select("*")
+    .single(); // Insert 후 변경된 로우 반환
 
   return query;
 };

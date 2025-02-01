@@ -12,10 +12,16 @@ export async function fetchThreadByUserId(
   const { data, error } = await defineFetchThreadByUserIdQuery(userId);
 
   if (error) {
+    // Supabase 에러 코드 PGRST116는 "JSON object requested, multiple (or no) rows returned" 에러로,
+    // 0개의 행이 반환되었거나 여러 행이 반환되었을 때 발생합니다.
+    if (error.code === "PGRST116") {
+      console.warn("No thread found for userId:", userId);
+      return null;
+    }
     console.error("Error fetching thread:", error);
     throw new Error("Failed to fetch thread");
   }
 
   console.log("Thread fetched successfully:", data);
-  return data; // 원하는 형태(단일 객체 vs 배열)에 맞춰 반환
+  return data;
 }
