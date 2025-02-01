@@ -4,6 +4,7 @@ import React, { ReactNode, useEffect } from "react";
 import { RecoilRoot } from "recoil";
 // types
 import { LoggedInUser } from "@/features/common/types/types";
+import { LoggedInProviders } from "./loggedInProvider";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -16,12 +17,11 @@ interface ProvidersProps {
  * - Does not manage React state
  */
 export function Providers({ children, loggedInUser }: ProvidersProps) {
-  // Save `loggedInUser` to localStorage when provided
-  useEffect(() => {
-    if (loggedInUser) {
-      localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
-    }
-  }, [loggedInUser]);
-
-  return <RecoilRoot>{children}</RecoilRoot>;
+  return (
+    <RecoilRoot>
+      <LoggedInProviders loggedInUser={loggedInUser}>
+        {children}
+      </LoggedInProviders>
+    </RecoilRoot>
+  );
 }
