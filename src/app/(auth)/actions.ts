@@ -22,9 +22,11 @@ export async function signInWithEmailPassword(formData: FormData) {
 
   if (error) {
     redirect(
-      `/login?message=${encodeURIComponent(
-        "이메일 또는 비밀번호를 다시 확인해주세요."
-      )}`
+      `/login?message=${
+        encodeURIComponent(
+          "이메일 또는 비밀번호를 다시 확인해주세요.",
+        )
+      }`,
     );
   }
 
@@ -51,13 +53,15 @@ export async function signInWithMagicLink(formData: FormData) {
   if (error) {
     if (error?.code === "user_not_found") {
       redirect(
-        `/login?message=${encodeURIComponent(
-          "회원 정보가 존재하지 않습니다. 회원가입을 진행해주세요."
-        )}`
+        `/login?message=${
+          encodeURIComponent(
+            "회원 정보가 존재하지 않습니다. 회원가입을 진행해주세요.",
+          )
+        }`,
       );
     }
     redirect(
-      `/login?message=${encodeURIComponent("이메일을 다시 확인해주세요.")}`
+      `/login?message=${encodeURIComponent("이메일을 다시 확인해주세요.")}`,
     );
   }
 
@@ -85,9 +89,11 @@ export async function signUp(formData: FormData) {
 
   if (error) {
     redirect(
-      `/login?message=${encodeURIComponent(
-        "회원가입에 실패했습니니다. 다시 시도해주세요."
-      )}`
+      `/login?message=${
+        encodeURIComponent(
+          "회원가입에 실패했습니니다. 다시 시도해주세요.",
+        )
+      }`,
     );
   }
 
@@ -108,9 +114,11 @@ export async function signOut() {
 export async function oAuthSignIn(provider: Provider) {
   if (!provider) {
     return redirect(
-      `/login?message=${encodeURIComponent(
-        "서버에 문제가 발생했습니다. 다시 시도해주세요."
-      )}`
+      `/login?message=${
+        encodeURIComponent(
+          "서버에 문제가 발생했습니다. 다시 시도해주세요.",
+        )
+      }`,
     );
   }
 
@@ -136,5 +144,6 @@ export async function oAuthSignIn(provider: Provider) {
   const cookieJar = cookies();
   cookieJar.set("lastSignedInMethod", provider);
 
+  console.log("data", data);
   return redirect(data.url);
 }
