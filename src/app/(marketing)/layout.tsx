@@ -5,6 +5,7 @@ import { Providers } from "@/components/provider";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/custom-ui/mode-toggle";
+import { redirect } from "next/navigation";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -27,6 +28,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  redirect("/thread");
   return (
     <html lang="ko">
       <Providers>

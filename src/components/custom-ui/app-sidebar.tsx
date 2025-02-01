@@ -85,12 +85,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const loggedInUserString = localStorage.getItem("loggedInUser");
-
-  // console.log("loggedInUser", loggedInUser);
-  if (!loggedInUserString) return null;
-
-  const loggedInUser = JSON.parse(loggedInUserString);
+  const loggedInUser = useLoggedInUser();
 
   return (
     <Sidebar collapsible="icon" {...props}>

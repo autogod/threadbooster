@@ -16,7 +16,8 @@ export const defineUpdateThreadQuery = (
     .from("threads")
     .update(updatedValues)
     .eq("id", threadId)
-    .select("*");
+    .select("*")
+    .single(); // Update 후 변경된 로우 반환
 
   return query;
 };

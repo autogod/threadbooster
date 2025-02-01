@@ -29,7 +29,7 @@ export async function updateThread({
     throw new Error("Failed to update thread");
   }
 
-  if (!data || data.length === 0) {
+  if (!data) {
     throw new Error("No thread found to update or no rows returned.");
   }
 
