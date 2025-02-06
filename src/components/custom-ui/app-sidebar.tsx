@@ -3,7 +3,7 @@
 import { useRouter, usePathname } from "next/navigation";
 import { useLoggedInUser } from "@/features/common/hooks/use-logged-in-user";
 
-// import { fetchProjects } from "@/features/projects/actions/fetch-projects";
+// import { fetchProjects } from "@/features/projects/actions/supabase/fetch-projects";
 import {
   Rss,
   Frame,

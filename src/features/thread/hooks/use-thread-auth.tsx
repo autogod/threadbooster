@@ -3,16 +3,16 @@
 // hooks
 import React, { useEffect, useState, useCallback } from "react";
 // actions
-import { getThreadAccessToken } from "@/features/thread/actions/get-thread-access-token";
-import { fetchThreadByUserId } from "@/features/thread/actions/fetch-thread-by-user-id";
-import { getThreadProfile } from "@/features/thread/actions/get-thread-profile";
-import { updateThread } from "@/features/thread/actions/update-threads";
-import { addThread } from "@/features/thread/actions/add-threads";
-import { addThreadPost } from "@/features/thread/actions/add-thread-posts";
-import { getThreadPosts } from "@/features/thread/actions/get-thread-posts";
-import { exchangeForLongLivedToken } from "@/features/thread/actions/exchange-long-lived-token";
+import { getThreadAccessToken } from "@/features/thread/actions/thread/get-thread-access-token";
+import { fetchThreadByUserId } from "@/features/thread/actions/supabase/fetch-thread-by-user-id";
+import { getThreadProfile } from "@/features/thread/actions/thread/get-thread-profile";
+import { updateThread } from "@/features/thread/actions/supabase/update-threads";
+import { addThread } from "@/features/thread/actions/supabase/add-threads";
+import { addThreadPost } from "@/features/thread/actions/supabase/add-thread-posts";
+import { getThreadPosts } from "@/features/thread/actions/thread/get-thread-posts";
+import { exchangeForLongLivedToken } from "@/features/thread/actions/thread/exchange-long-lived-token";
 // types
-import { ThreadsProfile } from "@/features/thread/actions/get-thread-profile";
+import { ThreadsProfile } from "@/features/thread/actions/thread/get-thread-profile";
 import { ThreadPostInsert } from "@/features/thread/types/types";
 import { ThreadPostData } from "@/features/thread/types/types";
 import { AddThread } from "@/features/thread/queries/define-add-threads";

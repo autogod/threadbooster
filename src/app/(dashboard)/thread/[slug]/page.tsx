@@ -10,7 +10,7 @@ import {
   TableRow,
   TableCell,
 } from "../../../../components/ui/table";
-import { fetchThreadPosts } from "@/features/thread/actions/fetch-thread-posts";
+import { fetchThreadPosts } from "@/features/thread/actions/supabase/fetch-thread-posts";
 import { FaEdit } from "react-icons/fa";
 
 export default function Page({ params }) {

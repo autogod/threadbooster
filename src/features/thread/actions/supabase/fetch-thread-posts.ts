@@ -1,7 +1,7 @@
 "use server";
 
-import { fetchThreadBySlug } from "@/features/thread/actions/fetch-thread-by-slug";
-import { fetchThreadPostsByThreadId } from "@/features/thread/actions/fetch-thread-posts-by-thread-id";
+import { fetchThreadBySlug } from "@/features/thread/actions/supabase/fetch-thread-by-slug";
+import { fetchThreadPostsByThreadId } from "@/features/thread/actions/supabase/fetch-thread-posts-by-thread-id";
 
 export async function fetchThreadPosts({ thread_user_id }: { thread_user_id: string }) {
   try {
