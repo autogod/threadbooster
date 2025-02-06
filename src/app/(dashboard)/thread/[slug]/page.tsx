@@ -1,4 +1,5 @@
 "use client";
+import { Link } from "react-router-dom";
 
 import { useEffect, useState } from "react";
 import {
@@ -10,6 +11,7 @@ import {
   TableCell,
 } from "../../../../components/ui/table";
 import { fetchThreadPosts } from "@/features/thread/actions/fetch-thread-posts";
+import { FaEdit } from "react-icons/fa";
 
 export default function Page({ params }) {
   console.log("Params:", params);
@@ -46,7 +48,38 @@ export default function Page({ params }) {
 
   return (
     <main className="min-h-screen w-full flex flex-col items-center p-4">
-      <h1 className="text-xl font-bold mb-4">스레드 게시글 리스트</h1>
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center", // 기본적으로 가운데 정렬
+          padding: "16px",
+          position: "relative", // absolute 정렬을 위한 기준점
+        }}
+      >
+        {/* ✅ 완전 중앙 정렬을 위해 absolute 사용 */}
+        <h1
+          style={{
+            fontSize: "1.25rem",
+            fontWeight: "bold",
+            position: "absolute",
+            left: "50%",
+            transform: "translateX(-50%)", // 정확히 중앙 정렬
+          }}
+        >
+          스레드 게시글 리스트
+        </h1>
+
+        {/* ✅ hi를 오른쪽 정렬 */}
+        <a
+          style={{ marginLeft: "auto", fontSize: "1.5rem", cursor: "pointer" }}
+          href={`https://400c-210-92-23-219.ngrok-free.app/thread/${slug}/create`}
+          rel="noopener noreferrer"
+        >
+          <FaEdit style={{ fontSize: "1.5rem", cursor: "pointer" }} />
+        </a>
+      </div>
       <div className="w-full overflow-x-auto">
         <Table>
           <TableHeader>
