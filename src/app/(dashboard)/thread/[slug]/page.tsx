@@ -71,10 +71,9 @@ export default function Page({ params }) {
           스레드 게시글 리스트
         </h1>
 
-        {/* ✅ hi를 오른쪽 정렬 */}
         <a
           style={{ marginLeft: "auto", fontSize: "1.5rem", cursor: "pointer" }}
-          href={`https://400c-210-92-23-219.ngrok-free.app/thread/${slug}/create`}
+          href={`/thread/${slug}/create`}
           rel="noopener noreferrer"
         >
           <FaEdit style={{ fontSize: "1.5rem", cursor: "pointer" }} />

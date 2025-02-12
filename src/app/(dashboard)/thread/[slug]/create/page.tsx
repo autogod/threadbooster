@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Textarea } from "../../../../../components/ui/textarea";
+import { addThreadPost } from "@/features/thread/actions/supabase/add-thread-posts";
 import { createThreadPost } from "@/features/thread/actions/thread/create-thread-post";
 import { useRouter } from "next/navigation"; // ✅ Next.js의 useRouter 사용
 
@@ -24,14 +25,29 @@ export default function Page({ params }) {
     setError(null);
 
     try {
-      const accessToken = "";
-      const success = await createThreadPost(accessToken, content);
+      const accessToken =
+        "THAAQFWBJ1Y0BBYlc3czJYalljQjEwTk5EeFZAUOEwxQmFJc3ZA3bEU2b2tYWkR2bDczX0ZAnNlFIczFjQzY5QWtqRnJta0trbjlhcUdKS21VVThGb3FRc19ISThKZAE1ZAT2tOLW12T3QwSDV5Nm85NUVqRl9WR18xVWZAnQnFMQlZAvRGp1UjhJX2wzTVZAocVZA5OEUZD";
 
-      if (success) {
-        alert("스레드가 성공적으로 작성되었습니다!");
+      // ✅ Supabase에 저장할 데이터 생성
+      const threadPostData = [
+        {
+          content: content,
+          thread_id: slug, // Thread ID 설정 (slug 사용)
+          created_at: new Date().toISOString(), // 생성 시간 추가
+        },
+      ];
+
+      // ✅ Supabase에 저장
+      const db_success = await addThreadPost({
+        threadPostDatas: threadPostData,
+      });
+
+      // ✅ API 요청을 통해 스레드 생성
+      const api_success = await createThreadPost(accessToken, content);
+
+      if (db_success && api_success) {
         setContent(""); // 입력창 초기화
-
-        router.push(`/thread/${slug}`);
+        router.push(`/thread/${slug}`); // 작성 완료 후 이동
       }
     } catch (err) {
       console.error("Error creating thread:", err);

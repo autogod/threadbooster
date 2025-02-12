@@ -1,7 +1,5 @@
 "use server";
 
-import { ThreadPostData } from "@/features/thread/types/types";
-
 /**
  * 액세스 토큰을 이용해서 Threads 사용자의 포스트를 생성하는 함수
  * @param accessToken - Threads access token
