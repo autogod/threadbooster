@@ -25,11 +25,8 @@ export default function Page({ params }) {
     setError(null);
 
     try {
-      const accessToken =
-        "THAAQFWBJ1Y0BBYlc3czJYalljQjEwTk5EeFZAUOEwxQmFJc3ZA3bEU2b2tYWkR2bDczX0ZAnNlFIczFjQzY5QWtqRnJta0trbjlhcUdKS21VVThGb3FRc19ISThKZAE1ZAT2tOLW12T3QwSDV5Nm85NUVqRl9WR18xVWZAnQnFMQlZAvRGp1UjhJX2wzTVZAocVZA5OEUZD";
-
       const threadData = await fetchThreadBySlug(slug);
-
+      const accessToken = threadData.thread_long_lived_token;
       // ✅ Supabase에 저장할 데이터 생성
       const threadPostData = [
         {
