@@ -42,7 +42,7 @@ export function ThreadProvider() {
       return;
     }
     updateToken(code);
-  }, [code, router]);
+  }, [code, router, updateToken]);
 
   if (isLoading)
     return (
