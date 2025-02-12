@@ -1,10 +1,10 @@
 "use client";
-
+import { fetchThreadBySlug } from "@/features/thread/actions/supabase/fetch-thread-by-slug";
 import { useState } from "react";
 import { Textarea } from "../../../../../components/ui/textarea";
 import { addThreadPost } from "@/features/thread/actions/supabase/add-thread-posts";
 import { createThreadPost } from "@/features/thread/actions/thread/create-thread-post";
-import { useRouter } from "next/navigation"; // ✅ Next.js의 useRouter 사용
+import { useRouter } from "next/navigation";
 
 export default function Page({ params }) {
   console.log("Params:", params);
@@ -28,24 +28,30 @@ export default function Page({ params }) {
       const accessToken =
         "THAAQFWBJ1Y0BBYlc3czJYalljQjEwTk5EeFZAUOEwxQmFJc3ZA3bEU2b2tYWkR2bDczX0ZAnNlFIczFjQzY5QWtqRnJta0trbjlhcUdKS21VVThGb3FRc19ISThKZAE1ZAT2tOLW12T3QwSDV5Nm85NUVqRl9WR18xVWZAnQnFMQlZAvRGp1UjhJX2wzTVZAocVZA5OEUZD";
 
+      const threadData = await fetchThreadBySlug(slug);
+
       // ✅ Supabase에 저장할 데이터 생성
       const threadPostData = [
         {
           content: content,
-          thread_id: slug, // Thread ID 설정 (slug 사용)
+          thread_id: threadData.id, // Thread ID 설정 (slug 사용)
           created_at: new Date().toISOString(), // 생성 시간 추가
         },
       ];
 
       // ✅ Supabase에 저장
-      const db_success = await addThreadPost({
+      const db_result = await addThreadPost({
         threadPostDatas: threadPostData,
       });
+
+      if (!db_result) {
+        throw new Error("Supabase 저장 실패");
+      }
 
       // ✅ API 요청을 통해 스레드 생성
       const api_success = await createThreadPost(accessToken, content);
 
-      if (db_success && api_success) {
+      if (api_success) {
         setContent(""); // 입력창 초기화
         router.push(`/thread/${slug}`); // 작성 완료 후 이동
       }
