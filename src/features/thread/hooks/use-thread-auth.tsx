@@ -1,20 +1,20 @@
 "use client";
 
 // hooks
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
+import { useRecoilValue } from "recoil";
+import { loggedInUserAtom } from "@/features/common/atoms/state"; // Recoil atom import
+// utils
+import { devLog } from "@/utils/logUtils";
 // actions
-import { getThreadAccessToken } from "@/features/thread/actions/thread/get-thread-access-token";
+import { getThreadAccessToken } from "@/features/thread/actions/get-thread-access-token";
+import { getThreadProfile } from "@/features/thread/actions/get-thread-profile";
 import { fetchThreadByUserId } from "@/features/thread/actions/supabase/fetch-thread-by-user-id";
-import { getThreadProfile } from "@/features/thread/actions/thread/get-thread-profile";
 import { updateThread } from "@/features/thread/actions/supabase/update-threads";
 import { addThread } from "@/features/thread/actions/supabase/add-threads";
-import { addThreadPost } from "@/features/thread/actions/supabase/add-thread-posts";
-import { getThreadPosts } from "@/features/thread/actions/thread/get-thread-posts";
 import { exchangeForLongLivedToken } from "@/features/thread/actions/thread/exchange-long-lived-token";
 // types
-import { ThreadsProfile } from "@/features/thread/actions/thread/get-thread-profile";
-import { ThreadPostInsert } from "@/features/thread/types/types";
-import { ThreadPostData } from "@/features/thread/types/types";
+import { ThreadsProfile } from "@/features/thread/actions/get-thread-profile";
 import { AddThread } from "@/features/thread/queries/define-add-threads";
 import { UpdateThread } from "@/features/thread/queries/define-update-threads";
 
@@ -23,145 +23,113 @@ type UseThreadAuthResult = {
   error: string | null;
   setAccessToken: (code: string) => Promise<ThreadsProfile | undefined>;
   checkAccessTokenExpiry: (userId: string) => Promise<boolean>;
-  // threadProfile: ThreadsProfile | null;
 };
 
 export function useThreadAuth(): UseThreadAuthResult {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // ✅ Recoil에서 로그인된 사용자 정보 가져오기
+  const loggedInUser = useRecoilValue(loggedInUserAtom);
+  const ownerProfileId = loggedInUser?.profile?.id;
+
   /**
    * Update Access Token
-   * 만약에 Thread 데이터가 DB에 없다면 새로 생성하고, 있다면 업데이트한다.
    */
   const setAccessToken = async (code: string) => {
+    devLog("▶ [setAccessToken] Start - Code received:", code);
     setIsLoading(true);
     setError(null);
 
     try {
-      // Step 1: 짧은-lived 토큰 받기
+      // Step 1: Get short-lived access token
+      devLog("▶ [Step 1] Requesting short-lived access token...");
       const result = await getThreadAccessToken(code);
+      devLog("✅ [Step 1] Access Token Response:", result);
+
       if ("error_type" in result) {
-        console.error("Error getting access token:", result.error_message);
+        console.error(
+          "❌ [Step 1] Error getting access token:",
+          result.error_message
+        );
         setError(result.error_message || "Failed to get access token");
         return;
       }
       const { access_token: shortLivedToken, user_id } = result;
 
-      // Step 2: 서버 환경변수에서 Threads App 시크릿 가져오기
-      const clientSecret = process.env.THREADS_APP_SECRET;
-      if (!clientSecret) {
-        throw new Error("Threads App secret is not configured");
-      }
-
-      // Step 3: 짧은-lived 토큰을 long-lived 토큰으로 교환
+      // Step 2: Exchange short-lived token for long-lived token
+      devLog("▶ [Step 2] Exchanging for long-lived token...");
       const longLivedTokenResponse = await exchangeForLongLivedToken(
-        shortLivedToken,
-        clientSecret
+        shortLivedToken
       );
+      devLog("✅ [Step 2] Long-lived Token Response:", longLivedTokenResponse);
       const longLivedToken = longLivedTokenResponse.access_token;
 
-      // Step 4: long-lived 토큰을 사용해 프로필 가져오기, DB 업데이트 등 필요한 작업 수행
+      // Step 3: Fetch user profile using long-lived token
+      devLog("▶ [Step 3] Fetching user profile...");
       const threadProfile = await getThreadProfile(longLivedToken);
-      // setThreadProfile(threadProfile);
+      devLog("✅ [Step 3] Thread Profile Response:", threadProfile);
 
-      // 토큰과 만료시간을 localStorage 등에 저장
+      // Step 4: Store token in localStorage
+      devLog("▶ [Step 4] Storing token in localStorage...");
       localStorage.setItem("thread_access_token", longLivedToken);
       const tokenExpiry = new Date(
         Date.now() + longLivedTokenResponse.expires_in * 1000
       ).toISOString();
       localStorage.setItem("thread_access_token_expiry", tokenExpiry);
+      devLog("✅ [Step 4] Token stored, Expiry:", tokenExpiry);
 
-      // Step 4: Get profile ID from localStorage
-      const storedProfile = localStorage.getItem("loggedInUser");
-      const ownerProfileId = storedProfile
-        ? JSON.parse(storedProfile).profile.id
-        : null;
-
+      // Step 5: Retrieve owner profile ID from Recoil
+      devLog("▶ [Step 5] Retrieving owner profile ID from Recoil...");
       if (!ownerProfileId) {
-        throw new Error("Owner profile ID not found in local storage");
+        throw new Error(
+          "❌ [Step 5] Owner profile ID not found in Recoil state."
+        );
       }
+      devLog("✅ [Step 5] Owner Profile ID:", ownerProfileId);
 
-      // Step 2: Check if thread data already exists in DB
+      // Step 6: Check if thread data exists in DB
+      devLog("▶ [Step 6] Checking existing thread data...");
       let thread = null;
       try {
         thread = await fetchThreadByUserId(user_id.toString());
+        devLog("✅ [Step 6] Thread found in DB:", thread);
       } catch (fetchError) {
-        console.warn("Thread not found, creating a new one...");
+        console.warn("⚠️ [Step 6] Thread not found, creating a new one...");
       }
 
-      // Step 5: Update or add thread in DB
+      // Step 7: Update or add thread in DB
+      devLog("▶ [Step 7] Updating or adding thread in DB...");
       let updatedThread: UpdateThread | AddThread;
       if (thread) {
         updatedThread = await updateThread({
           threadId: thread.id,
           threadData: {
-            thread_access_token: longLivedToken,
+            thread_access_token: shortLivedToken,
+            thread_long_lived_token: longLivedToken,
             thread_user_id: user_id.toString(),
             thread_access_token_expired_at: tokenExpiry,
-            thread_metadata: threadProfile, // Storing profile in metadata
+            thread_metadata: threadProfile,
           },
         });
       } else {
         updatedThread = await addThread({
           threadData: {
             slug: threadProfile.username || `thread-${user_id}`,
-            thread_access_token: longLivedToken,
+            thread_access_token: shortLivedToken,
+            thread_long_lived_token: longLivedToken,
             thread_user_id: user_id.toString(),
             thread_metadata: threadProfile,
-            owner_profile_id: ownerProfileId, // Fetched from localStorage
+            owner_profile_id: ownerProfileId,
           },
         });
       }
+      devLog("✅ [Step 7] Thread Updated or Added:", updatedThread);
 
-      console.log("Access token and thread data updated successfully.");
-      await getInitialThreadPosts(updatedThread.id);
+      console.log("✅ [setAccessToken] Completed successfully.");
       return threadProfile;
     } catch (err) {
-      console.error("Error during updateAccessToken:", err);
-      setError(
-        err instanceof Error ? err.message : "An unknown error occurred"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getInitialThreadPosts = async (threadId: string) => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Step 1: Get access token from localStorage
-      const accessToken = localStorage.getItem("thread_access_token");
-
-      if (!accessToken) {
-        throw new Error("Access token not found in localStorage");
-      }
-
-      // Step 2: Fetch thread posts from Threads API
-      const threadPosts = await getThreadPosts(accessToken);
-
-      // Step 3: API 응답의 각 포스트를 DB 삽입용 객체(ThreadPostInsert)로 매핑
-      const postsToInsert: ThreadPostInsert[] = threadPosts.map(
-        (post: ThreadPostData) => {
-          return {
-            thread_id: threadId,
-            content: post.text || null,
-            raw_data: post,
-          };
-        }
-      );
-
-      // Step 4: 매핑한 포스트들을 DB에 삽입
-      const insertedPosts = await addThreadPost({
-        threadPostDatas: postsToInsert,
-      });
-
-      console.log("Thread posts fetched successfully.");
-      return threadPosts;
-    } catch (err) {
-      console.error("Error fetching thread posts:", err);
+      console.error("❌ [setAccessToken] Error:", err);
       setError(
         err instanceof Error ? err.message : "An unknown error occurred"
       );
@@ -175,44 +143,48 @@ export function useThreadAuth(): UseThreadAuthResult {
    */
   const checkAccessTokenExpiry = useCallback(
     async (userId: string): Promise<boolean> => {
-      // Step 1: Check localStorage for expiry datetime
-      const localExpiry = localStorage.getItem("thread_access_token_expiry");
+      devLog(
+        "▶ [checkAccessTokenExpiry] Checking token expiry for user:",
+        userId
+      );
 
+      // Step 1: Check localStorage
+      const localExpiry = localStorage.getItem("thread_access_token_expiry");
       if (localExpiry) {
         const expiryDate = new Date(localExpiry);
         if (expiryDate > new Date()) {
-          console.log("Access token is still valid (localStorage).");
-          return false; // Token is valid
+          devLog(
+            "✅ [checkAccessTokenExpiry] Token is still valid (localStorage)."
+          );
+          return false;
         }
       }
 
-      // Step 2: Check database for token expiry
+      // Step 2: Check database
       try {
+        devLog("▶ [checkAccessTokenExpiry] Checking token in database...");
         const thread = await fetchThreadByUserId(userId);
 
         if (!thread || !thread.thread_access_token_expired_at) {
-          console.warn("Thread or token expiry datetime not found in DB.");
-          return true; // Expired if no token data is found
+          console.warn("⚠️ [checkAccessTokenExpiry] Token not found in DB.");
+          return true;
         }
 
         const dbExpiryDate = new Date(thread.thread_access_token_expired_at);
         if (dbExpiryDate > new Date()) {
-          console.log("Access token is still valid (database).");
-
-          // Sync valid DB expiry to localStorage
+          devLog("✅ [checkAccessTokenExpiry] Token is valid (DB).");
           localStorage.setItem(
             "thread_access_token_expiry",
             thread.thread_access_token_expired_at
           );
-
-          return false; // Token is valid
+          return false;
         }
       } catch (error) {
-        console.error("Error checking token expiry in DB:", error);
+        console.error("❌ [checkAccessTokenExpiry] Error checking DB:", error);
       }
 
-      console.warn("Access token is expired.");
-      return true; // Token is expired
+      console.warn("⚠️ [checkAccessTokenExpiry] Token is expired.");
+      return true;
     },
     []
   );

@@ -18,8 +18,11 @@ export type LongLivedTokenResponse = {
  */
 export async function exchangeForLongLivedToken(
   shortLivedToken: string,
-  clientSecret: string,
 ): Promise<LongLivedTokenResponse> {
+  const clientSecret = process.env.THREAD_CLIENT_SECRET;
+  if (!clientSecret) {
+    throw new Error("Threads App secret is not configured");
+  }
   const url =
     `https://graph.threads.net/access_token?grant_type=th_exchange_token&client_secret=${
       encodeURIComponent(
