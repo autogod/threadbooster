@@ -11,7 +11,7 @@ export const defineFetchThreadPostsByThreadIdQuery = (threadId: string) => {
     .from("thread_posts")
     .select("*")
     .eq("thread_id", threadId)
-    .order("created_at", { ascending: false }); 
+    .order("created_at", { ascending: false });
 
   return query;
 };

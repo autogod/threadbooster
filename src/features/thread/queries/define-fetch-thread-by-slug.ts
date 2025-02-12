@@ -18,5 +18,5 @@ export const defineFetchThreadBySlugQuery = (slug: string) => {
 
 // Type for the query result
 export type FetchThread = QueryData<
-  ReturnType<typeof defineFetchThreadByUserIdQuery>
+  ReturnType<typeof defineFetchThreadBySlugQuery>
 >;

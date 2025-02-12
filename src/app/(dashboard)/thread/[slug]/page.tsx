@@ -1,7 +1,9 @@
 "use client";
 import { Link } from "react-router-dom";
 
+// hooks
 import { useEffect, useState } from "react";
+// components
 import {
   Table,
   TableHeader,
@@ -9,16 +11,19 @@ import {
   TableHead,
   TableRow,
   TableCell,
-} from "../../../../components/ui/table";
-import { fetchThreadPosts } from "@/features/thread/actions/supabase/fetch-thread-posts";
+} from "@/components/ui/table";
 import { FaEdit } from "react-icons/fa";
+// actions
+import { fetchThreadPosts } from "@/features/thread/actions/supabase/fetch-thread-posts";
+// types
+import { FetchThreadPostsByThreadId } from "@/features/thread/queries/define-fetch-thread-posts-by-thread-id";
 
-export default function Page({ params }) {
+export default function Page({ params }: { params: { slug: string } }) {
   console.log("Params:", params);
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [posts, setPosts] = useState([]); // `posts`로 변수명 변경
+  const [error, setError] = useState<string | null>(null);
+  const [posts, setPosts] = useState<FetchThreadPostsByThreadId>([]); // `posts`로 변수명 변경
 
   const { slug } = params;
   console.log("Slug:", slug);
@@ -30,7 +35,7 @@ export default function Page({ params }) {
       return;
     }
 
-    fetchThreadPosts({ thread_user_id: slug })
+    fetchThreadPosts({ slug: slug })
       .then((data) => {
         console.log("Fetched data:", data);
         setPosts(data || []);
