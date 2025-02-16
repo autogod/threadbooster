@@ -88,11 +88,11 @@ export default function Page({ params }: { params: { slug: string } }) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[40%]">Abstract</TableHead>
               <TableHead className="w-[40%]">Content</TableHead>
               <TableHead className="w-[15%]">Created At</TableHead>
               <TableHead className="w-[10%]">Status</TableHead>
               <TableHead className="w-[10%]">Likes</TableHead>
+              <TableHead className="w-[15%]">Memo</TableHead>
               <TableHead className="w-[10%]">Parent Post ID</TableHead>
             </TableRow>
           </TableHeader>
@@ -106,9 +106,6 @@ export default function Page({ params }: { params: { slug: string } }) {
             ) : (
               posts.map((post) => (
                 <TableRow key={post.id}>
-                  <TableCell className="w-[40%]">
-                    {post.abstract || "No content"}
-                  </TableCell>
                   <TableCell className="w-[40%]">
                     {post.content || "No content"}
                   </TableCell>
