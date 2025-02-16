@@ -64,9 +64,12 @@ export type Database = {
           id: string
           likes: number | null
           memo: string | null
+          origin_id: string | null
           parent_post_id: string | null
+          post_type: Database["public"]["Enums"]["THREAD_POST_TYPE"] | null
           raw_data: Json | null
           status: Database["public"]["Enums"]["THREAD_POST_STATUS"] | null
+          thread_created_at: string | null
           thread_id: string | null
         }
         Insert: {
@@ -76,9 +79,12 @@ export type Database = {
           id?: string
           likes?: number | null
           memo?: string | null
+          origin_id?: string | null
           parent_post_id?: string | null
+          post_type?: Database["public"]["Enums"]["THREAD_POST_TYPE"] | null
           raw_data?: Json | null
           status?: Database["public"]["Enums"]["THREAD_POST_STATUS"] | null
+          thread_created_at?: string | null
           thread_id?: string | null
         }
         Update: {
@@ -88,9 +94,12 @@ export type Database = {
           id?: string
           likes?: number | null
           memo?: string | null
+          origin_id?: string | null
           parent_post_id?: string | null
+          post_type?: Database["public"]["Enums"]["THREAD_POST_TYPE"] | null
           raw_data?: Json | null
           status?: Database["public"]["Enums"]["THREAD_POST_STATUS"] | null
+          thread_created_at?: string | null
           thread_id?: string | null
         }
         Relationships: [
@@ -163,6 +172,7 @@ export type Database = {
     }
     Enums: {
       THREAD_POST_STATUS: "MEMO" | "DRAFT" | "COMPLETE"
+      THREAD_POST_TYPE: "TEXT_POST" | "REPOST" | "QUOTE"
     }
     CompositeTypes: {
       [_ in never]: never

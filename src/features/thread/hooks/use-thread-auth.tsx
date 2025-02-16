@@ -1,105 +1,120 @@
 "use client";
 
-// hooks
 import React, { useState, useCallback } from "react";
 import { useRecoilValue } from "recoil";
-import { loggedInUserAtom } from "@/features/common/atoms/state"; // Recoil atom import
-// utils
+import { loggedInUserAtom } from "@/features/common/atoms/state";
 import { devLog } from "@/utils/logUtils";
-// actions
-import { getThreadAccessToken } from "@/features/thread/actions/get-thread-access-token";
-import { getThreadProfile } from "@/features/thread/actions/get-thread-profile";
+import { getThreadAccessToken } from "@/features/thread/actions/thread/get-thread-access-token";
+import { getThreadProfile } from "@/features/thread/actions/thread/get-thread-profile";
 import { fetchThreadByUserId } from "@/features/thread/actions/supabase/fetch-thread-by-user-id";
 import { updateThread } from "@/features/thread/actions/supabase/update-threads";
 import { addThread } from "@/features/thread/actions/supabase/add-threads";
 import { exchangeForLongLivedToken } from "@/features/thread/actions/thread/exchange-long-lived-token";
-// types
-import { ThreadsProfile } from "@/features/thread/actions/get-thread-profile";
-import { AddThread } from "@/features/thread/queries/define-add-threads";
-import { UpdateThread } from "@/features/thread/queries/define-update-threads";
+import { syncAllPosts } from "@/features/thread/actions/sync-all-posts";
+import type { ThreadsProfile } from "@/features/thread/actions/thread/get-thread-profile";
+import type { AddThread } from "@/features/thread/queries/define-add-threads";
+import type { UpdateThread } from "@/features/thread/queries/define-update-threads";
 
-type UseThreadAuthResult = {
-  isLoading: boolean;
+export type UseThreadAuthResult = {
   error: string | null;
-  setAccessToken: (code: string) => Promise<ThreadsProfile | undefined>;
+  setAccessToken: (code: string) => Promise<
+    | {
+        threadProfile: ThreadsProfile;
+        threadId: string;
+        longLivedToken: string;
+      }
+    | undefined
+  >;
   checkAccessTokenExpiry: (userId: string) => Promise<boolean>;
+  currentStep: number;
+  statusMessage: string;
+  updateStatus: (step: number, message: string) => void;
 };
 
 export function useThreadAuth(): UseThreadAuthResult {
-  const [isLoading, setIsLoading] = useState(false);
+  // 내부 isLoading 제거
   const [error, setError] = useState<string | null>(null);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [statusMessage, setStatusMessage] = useState("");
 
-  // ✅ Recoil에서 로그인된 사용자 정보 가져오기
   const loggedInUser = useRecoilValue(loggedInUserAtom);
   const ownerProfileId = loggedInUser?.profile?.id;
 
-  /**
-   * Update Access Token
-   */
-  const setAccessToken = async (code: string) => {
-    devLog("▶ [setAccessToken] Start - Code received:", code);
-    setIsLoading(true);
+  // 외부에서 상태(현재 단계, 상태 메시지)를 업데이트할 수 있도록 함수 제공
+  const updateStatus = (step: number, message: string) => {
+    setCurrentStep(step);
+    setStatusMessage(message);
+  };
+
+  const setAccessToken = async (
+    code: string
+  ): Promise<
+    | {
+        threadProfile: ThreadsProfile;
+        threadId: string;
+        longLivedToken: string;
+      }
+    | undefined
+  > => {
+    devLog("▶ [setAccessToken] 시작 - 전달된 코드:", code);
     setError(null);
 
     try {
-      // Step 1: Get short-lived access token
-      devLog("▶ [Step 1] Requesting short-lived access token...");
+      // 1단계: 단기 액세스 토큰 요청 중...
+      updateStatus(1, "단기 액세스 토큰 요청 중...");
       const result = await getThreadAccessToken(code);
-      devLog("✅ [Step 1] Access Token Response:", result);
+      devLog("✅ [1단계] 액세스 토큰 응답:", result);
 
       if ("error_type" in result) {
-        console.error(
-          "❌ [Step 1] Error getting access token:",
-          result.error_message
-        );
-        setError(result.error_message || "Failed to get access token");
+        console.error("❌ [1단계] 오류:", result.error_message);
+        setError(result.error_message || "액세스 토큰을 가져오지 못했습니다.");
         return;
       }
       const { access_token: shortLivedToken, user_id } = result;
 
-      // Step 2: Exchange short-lived token for long-lived token
-      devLog("▶ [Step 2] Exchanging for long-lived token...");
+      // 2단계: 장기 액세스 토큰으로 교환 중...
+      updateStatus(2, "장기 액세스 토큰으로 교환 중...");
       const longLivedTokenResponse = await exchangeForLongLivedToken(
         shortLivedToken
       );
-      devLog("✅ [Step 2] Long-lived Token Response:", longLivedTokenResponse);
+      devLog("✅ [2단계] 장기 액세스 토큰 응답:", longLivedTokenResponse);
       const longLivedToken = longLivedTokenResponse.access_token;
 
-      // Step 3: Fetch user profile using long-lived token
-      devLog("▶ [Step 3] Fetching user profile...");
+      // 3단계: 사용자 프로필 가져오는 중...
+      updateStatus(3, "사용자 프로필 가져오는 중...");
       const threadProfile = await getThreadProfile(longLivedToken);
-      devLog("✅ [Step 3] Thread Profile Response:", threadProfile);
+      devLog("✅ [3단계] 사용자 프로필 응답:", threadProfile);
 
-      // Step 4: Store token in localStorage
-      devLog("▶ [Step 4] Storing token in localStorage...");
+      // 4단계: 토큰을 로컬에 저장 중...
+      updateStatus(4, "토큰을 로컬에 저장 중...");
       localStorage.setItem("thread_access_token", longLivedToken);
       const tokenExpiry = new Date(
         Date.now() + longLivedTokenResponse.expires_in * 1000
       ).toISOString();
       localStorage.setItem("thread_access_token_expiry", tokenExpiry);
-      devLog("✅ [Step 4] Token stored, Expiry:", tokenExpiry);
+      devLog("✅ [4단계] 토큰 저장 완료, 만료 시간:", tokenExpiry);
 
-      // Step 5: Retrieve owner profile ID from Recoil
-      devLog("▶ [Step 5] Retrieving owner profile ID from Recoil...");
+      // 5단계: 소유자 프로필 ID 확인 중...
+      updateStatus(5, "소유자 프로필 ID 확인 중...");
       if (!ownerProfileId) {
-        throw new Error(
-          "❌ [Step 5] Owner profile ID not found in Recoil state."
-        );
+        throw new Error("Recoil 상태에서 소유자 프로필 ID를 찾을 수 없습니다.");
       }
-      devLog("✅ [Step 5] Owner Profile ID:", ownerProfileId);
+      devLog("✅ [5단계] 소유자 프로필 ID:", ownerProfileId);
 
-      // Step 6: Check if thread data exists in DB
-      devLog("▶ [Step 6] Checking existing thread data...");
+      // 6단계: 기존 스레드 데이터 확인 중...
+      updateStatus(6, "기존 스레드 데이터 확인 중...");
       let thread = null;
       try {
         thread = await fetchThreadByUserId(user_id.toString());
-        devLog("✅ [Step 6] Thread found in DB:", thread);
+        devLog("✅ [6단계] DB에서 스레드 데이터 발견:", thread);
       } catch (fetchError) {
-        console.warn("⚠️ [Step 6] Thread not found, creating a new one...");
+        console.warn(
+          "⚠️ [6단계] DB에서 스레드 데이터를 찾지 못함, 새로 생성합니다."
+        );
       }
 
-      // Step 7: Update or add thread in DB
-      devLog("▶ [Step 7] Updating or adding thread in DB...");
+      // 7단계: 스레드 데이터 업데이트 중...
+      updateStatus(7, "스레드 데이터 업데이트 중...");
       let updatedThread: UpdateThread | AddThread;
       if (thread) {
         updatedThread = await updateThread({
@@ -124,55 +139,49 @@ export function useThreadAuth(): UseThreadAuthResult {
           },
         });
       }
-      devLog("✅ [Step 7] Thread Updated or Added:", updatedThread);
-
-      console.log("✅ [setAccessToken] Completed successfully.");
-      return threadProfile;
+      updateStatus(7, "스레드 인증 완료.");
+      console.log("✅ [setAccessToken] 완료.");
+      return { threadProfile, threadId: updatedThread.id, longLivedToken };
     } catch (err) {
-      console.error("❌ [setAccessToken] Error:", err);
+      console.error("❌ [setAccessToken] 오류:", err);
       setError(
-        err instanceof Error ? err.message : "An unknown error occurred"
+        err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다."
       );
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  /**
-   * Check if the access token is expired
-   */
   const checkAccessTokenExpiry = useCallback(
     async (userId: string): Promise<boolean> => {
       devLog(
-        "▶ [checkAccessTokenExpiry] Checking token expiry for user:",
+        "▶ [checkAccessTokenExpiry] 사용자 토큰 만료 여부 확인 중:",
         userId
       );
 
-      // Step 1: Check localStorage
+      // localStorage에서 만료 시간 확인
       const localExpiry = localStorage.getItem("thread_access_token_expiry");
       if (localExpiry) {
         const expiryDate = new Date(localExpiry);
         if (expiryDate > new Date()) {
-          devLog(
-            "✅ [checkAccessTokenExpiry] Token is still valid (localStorage)."
-          );
+          devLog("✅ [checkAccessTokenExpiry] 토큰 유효 (localStorage).");
           return false;
         }
       }
 
-      // Step 2: Check database
+      // DB에서 확인
       try {
-        devLog("▶ [checkAccessTokenExpiry] Checking token in database...");
+        devLog("▶ [checkAccessTokenExpiry] DB에서 토큰 확인 중...");
         const thread = await fetchThreadByUserId(userId);
 
         if (!thread || !thread.thread_access_token_expired_at) {
-          console.warn("⚠️ [checkAccessTokenExpiry] Token not found in DB.");
+          console.warn(
+            "⚠️ [checkAccessTokenExpiry] DB에서 토큰 정보를 찾지 못함."
+          );
           return true;
         }
 
         const dbExpiryDate = new Date(thread.thread_access_token_expired_at);
         if (dbExpiryDate > new Date()) {
-          devLog("✅ [checkAccessTokenExpiry] Token is valid (DB).");
+          devLog("✅ [checkAccessTokenExpiry] 토큰 유효 (DB).");
           localStorage.setItem(
             "thread_access_token_expiry",
             thread.thread_access_token_expired_at
@@ -180,19 +189,24 @@ export function useThreadAuth(): UseThreadAuthResult {
           return false;
         }
       } catch (error) {
-        console.error("❌ [checkAccessTokenExpiry] Error checking DB:", error);
+        console.error(
+          "❌ [checkAccessTokenExpiry] DB 확인 중 오류 발생:",
+          error
+        );
       }
 
-      console.warn("⚠️ [checkAccessTokenExpiry] Token is expired.");
+      console.warn("⚠️ [checkAccessTokenExpiry] 토큰 만료됨.");
       return true;
     },
     []
   );
 
   return {
-    isLoading,
     error,
     setAccessToken,
     checkAccessTokenExpiry,
+    currentStep,
+    statusMessage,
+    updateStatus,
   };
 }

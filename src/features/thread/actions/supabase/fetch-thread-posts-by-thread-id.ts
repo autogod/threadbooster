@@ -10,9 +10,7 @@ export async function fetchThreadPostsByThreadId({
 }: {
   threadId: string;
 }): Promise<FetchThreadPostsByThreadId> {
-  console.log("threadId:", threadId);
   const { data, error } = await defineFetchThreadPostsByThreadIdQuery(threadId);
-  console.log("data:", data);
   if (error) {
     console.error("Error fetching thread:", error);
     throw new Error("Failed to fetch thread");
@@ -23,6 +21,6 @@ export async function fetchThreadPostsByThreadId({
   //   throw new Error("Thread not found");
   // }
 
-  console.log("Thread fetched successfully:", data);
+  // console.log("Thread fetched successfully:", data);
   return data; // 원하는 형태(단일 객체 vs 배열)에 맞춰 반환
 }

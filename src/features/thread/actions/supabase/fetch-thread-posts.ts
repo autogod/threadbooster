@@ -12,12 +12,12 @@ export async function fetchThreadPosts({ slug }: { slug: string }) {
       throw new Error("Thread not found");
     }
 
-    console.log("Thread fetched successfully. ID:", threadData.id);
+    // console.log("Thread fetched successfully. ID:", threadData.id);
 
     // 'thread_id'를 기반으로 `thread_posts` 가져오기
     const posts = await fetchThreadPostsByThreadId({ threadId: threadData.id });
 
-    console.log("Posts fetched successfully:", posts);
+    // console.log("Posts fetched successfully:", posts);
     return posts;
   } catch (error) {
     console.error("Error fetching thread or posts:", error);

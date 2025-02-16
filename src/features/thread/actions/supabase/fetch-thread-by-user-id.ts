@@ -22,6 +22,6 @@ export async function fetchThreadByUserId(
     throw new Error("Failed to fetch thread");
   }
 
-  console.log("Thread fetched successfully:", data);
+  // console.log("Thread fetched successfully:", data);
   return data;
 }

@@ -5,7 +5,6 @@ import {
     defineAddThreadPostQuery,
 } from "@/features/thread/queries/define-add-thread-posts";
 import { ThreadPostInsert } from "@/features/thread/types/types";
-import { fetchThreadBySlug } from "@/features/thread/actions/supabase/fetch-thread-by-slug";
 
 /**
  * 새로운 thread post를 생성하는 액션
@@ -18,14 +17,14 @@ export async function addThreadPost({
     threadPostDatas: ThreadPostInsert[];
 }): Promise<AddThreadPosts> {
     // thread post 추가 (쿼리 함수 호출)
-    console.log('threadPostDatas:', threadPostDatas)
+    // console.log("threadPostDatas:", threadPostDatas);
     const { data, error } = await defineAddThreadPostQuery(threadPostDatas);
 
     if (error) {
-        console.error("Error adding thread post:", error);
+        // console.error("Error adding thread post:", error);
         throw new Error("Failed to add thread post");
     }
 
-    console.log("Thread post added successfully:", data);
+    // console.log("Thread post added successfully:", data);
     return data;
 }
