@@ -17,7 +17,6 @@ export async function addThreadPost({
     threadPostDatas: ThreadPostInsert[];
 }): Promise<AddThreadPosts> {
     // thread post 추가 (쿼리 함수 호출)
-    // console.log("threadPostDatas:", threadPostDatas);
     const { data, error } = await defineAddThreadPostQuery(threadPostDatas);
 
     if (error) {
