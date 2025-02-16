@@ -7,14 +7,14 @@ import { loggedInUserAtom } from "@/features/common/atoms/state"; // Recoil atom
 // utils
 import { devLog } from "@/utils/logUtils";
 // actions
-import { getThreadAccessToken } from "@/features/thread/actions/get-thread-access-token";
-import { getThreadProfile } from "@/features/thread/actions/get-thread-profile";
+import { getThreadAccessToken } from "@/features/thread/actions/thread/get-thread-access-token";
+import { getThreadProfile } from "@/features/thread/actions/thread/get-thread-profile";
 import { fetchThreadByUserId } from "@/features/thread/actions/supabase/fetch-thread-by-user-id";
 import { updateThread } from "@/features/thread/actions/supabase/update-threads";
 import { addThread } from "@/features/thread/actions/supabase/add-threads";
 import { exchangeForLongLivedToken } from "@/features/thread/actions/thread/exchange-long-lived-token";
 // types
-import { ThreadsProfile } from "@/features/thread/actions/get-thread-profile";
+import { ThreadsProfile } from "@/features/thread/actions/thread/get-thread-profile";
 import { AddThread } from "@/features/thread/queries/define-add-threads";
 import { UpdateThread } from "@/features/thread/queries/define-update-threads";
 
