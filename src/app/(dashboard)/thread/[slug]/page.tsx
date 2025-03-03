@@ -1,12 +1,15 @@
-// page.tsx (서버 컴포넌트)
 import React from "react";
 import { ThreadPostTable } from "@/features/thread/components/thread-post-table";
 import { fetchThreadPosts } from "@/features/thread/actions/supabase/fetch-thread-posts";
+import WriteButton from "@/features/thread/components/write-button";
+
 import type {
   ThreadPostWithExactRawData,
   ThreadPostData,
   ThreadPost,
 } from "@/features/thread/types/types";
+
+// 클라이언트 컴포넌트 import
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const { slug } = params;
@@ -22,10 +25,14 @@ export default async function Page({ params }: { params: { slug: string } }) {
   }));
 
   return (
-    <main className="min-h-screen w-full p-4">
+    <main className="min-h-screen w-full p-4 relative">
       <h1 className="text-center text-2xl font-bold mb-4">
         스레드 게시글 리스트
       </h1>
+
+      {/* 클라이언트 컴포넌트 사용 */}
+      <WriteButton />
+
       <ThreadPostTable posts={mappedPosts} />
     </main>
   );

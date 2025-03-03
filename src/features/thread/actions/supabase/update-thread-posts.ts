@@ -23,7 +23,8 @@ export async function updateThreadPost({
     postId,
     threadPostData,
   );
-
+  console.log('postId:', postId)
+  console.log('threadPostData:', threadPostData)
   if (error) {
     // console.error("Error updating thread post:", error);
     throw new Error("Failed to update thread post");

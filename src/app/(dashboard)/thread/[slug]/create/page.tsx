@@ -10,7 +10,7 @@ import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
-} from "../../../../../components/ui/resizable";
+} from "@/components/ui/resizable";
 import { addThreadPost } from "@/features/thread/actions/supabase/add-thread-posts";
 import { getOpenAICompletion } from "@/features/thread/actions/openAI/get-open-ai-completion";
 import {
@@ -57,17 +57,11 @@ export default function ThreadPage({ params }) {
     const content = await getOpenAICompletion({
       prompt: leftTopContent + "\n" + leftBottomContent,
     });
-    console.log("content", content);
-    console.log("content", content);
-    console.log("content", content);
-    console.log("content", content);
-    console.log("content", content);
-    console.log("content", content);
-    console.log("content", content);
     try {
       const threadData = await fetchThreadBySlug(slug);
       const threadPostData = [
         {
+          input: leftTopContent,
           abstract: content,
           thread_id: threadData.id,
           created_at: new Date().toISOString(),
