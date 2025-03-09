@@ -34,11 +34,14 @@ export async function createThreadPost(
     `https://graph.threads.net/v1.0/8844056592383419/threads_publish?creation_id=${container_id}&access_token=${accessToken}`,
     { method: "POST" }
   );
+  const thread_publish_response_data = await response.json()
+  console.log('Thread 게시 요청 response:', thread_publish_response_data)
+  const {id: new_post_thread_id} =  thread_publish_response_data
 
   if (!response.ok) {
     console.error("Failed to publish thread. Status:", response.status);
     throw new Error(`Failed to publish thread: ${response.statusText}`);
   }
 
-  return true; // 성공 시 true 반환
+  return new_post_thread_id; // 성공 시 true 반환
 }

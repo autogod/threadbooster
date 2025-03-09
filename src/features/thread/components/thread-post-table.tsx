@@ -64,6 +64,42 @@ export const columns: ColumnDef<ThreadPostWithExactRawData>[] = [
   },
   {
     accessorKey: "content",
+    header: "초안",
+    cell: ({ row }) => {
+      const post = row.original;
+      let displayContent = post.abstract || "초안 없음";
+      // raw_data가 있으면 reposted_post 또는 is_quote_post 여부로 내용 변경
+      if (post.raw_data) {
+        if (post.raw_data.reposted_post) {
+          displayContent = "리포스트";
+        } else if (post.raw_data.is_quote_post) {
+          displayContent = "인용";
+        }
+      }
+      // 외부 링크: raw_data에 permalink가 있으면 해당 링크로 연결
+      const link = post.raw_data?.permalink;
+      const contentNode = link ? (
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 underline"
+        >
+          {displayContent}
+        </a>
+      ) : (
+        displayContent
+      );
+      return (
+        <div className="truncate" style={{ maxWidth: "200px" }}>
+          {contentNode}
+        </div>
+      );
+    },
+    size: 200,
+  },
+  {
+    accessorKey: "content",
     header: "내용",
     cell: ({ row }) => {
       const post = row.original;

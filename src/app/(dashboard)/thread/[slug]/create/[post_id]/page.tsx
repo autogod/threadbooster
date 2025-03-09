@@ -1,8 +1,5 @@
 "use client";
-import { revalidatePath } from "next/cache";
 
-import { GripVertical } from "lucide-react";
-import * as ResizablePrimitive from "react-resizable-panels";
 import { Button } from "@/components/ui/button";
 import { fetchThreadBySlug } from "@/features/thread/actions/supabase/fetch-thread-by-slug";
 import { useState, useEffect } from "react";
@@ -22,7 +19,8 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { changePostPrompt } from "@/prompts/change_post_prompt";
-
+import { finalizeThreadPost } from "@/features/thread/actions/supabase/finalize-thread-post";
+import { createThreadPost } from "@/features/thread/actions/thread/create-thread-post";
 export default function ThreadPage({ params }) {
   const optionValues = {
     "초안 작성하기": "위의 내용을 기반으로 스레드 초안을 작성해주세요.",
@@ -75,16 +73,16 @@ export default function ThreadPage({ params }) {
   };
   const handleConfirm = async () => {
     try {
-      const finalize_success = await finalizeThreadPost(
-        postData[0].id,
-        rightContent
-      );
-
       const threadData = await fetchThreadBySlug(slug);
       const accessToken = threadData.thread_long_lived_token;
-      const api_success = await createThreadPost(accessToken, rightContent);
+      const origin_id = await createThreadPost(accessToken, rightContent);
+      const finalize_success = await finalizeThreadPost(
+        post_id,
+        rightContent,
+        origin_id
+      );
 
-      if (api_success) {
+      if (origin_id) {
         console.log("확정된 내용이 성공적으로 저장되었습니다.");
         router.push(`/thread/${slug}`);
       }
