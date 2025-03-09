@@ -21,11 +21,12 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { changePostPrompt } from "@/prompts/change_post_prompt";
 
 export default function ThreadPage({ params }) {
   const optionValues = {
     "초안 작성하기": "위의 내용을 기반으로 스레드 초안을 작성해주세요.",
-    수정하기: "위의 내용을 더 간결하게 다듬어주세요",
+    수정하기: "게시글의 내용을 더 간결하게 다듬어주세요.",
   };
 
   const [post, setPost] = useState(null); // post 데이터를 저장할 state
@@ -101,8 +102,13 @@ export default function ThreadPage({ params }) {
     setLoading(true);
     setError(null);
 
+    const prompt = changePostPrompt({
+      initial_post: post["0"]["abstract"],
+      user_prompt: leftBottomContent,
+      reference: leftTopContent,
+    });
     const content = await getOpenAICompletion({
-      prompt: post["0"]["abstract"] + "\n" + leftBottomContent,
+      prompt: prompt,
     });
 
     try {

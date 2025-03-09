@@ -1,17 +1,15 @@
 "use client";
 
-import { GripVertical } from "lucide-react";
-import * as ResizablePrimitive from "react-resizable-panels";
-import { Button } from "@/components/ui/button";
-import { fetchThreadBySlug } from "@/features/thread/actions/supabase/fetch-thread-by-slug";
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
+import { Button } from "@/components/ui/button";
 import { addThreadPost } from "@/features/thread/actions/supabase/add-thread-posts";
+import { fetchThreadBySlug } from "@/features/thread/actions/supabase/fetch-thread-by-slug";
 import { getOpenAICompletion } from "@/features/thread/actions/openAI/get-open-ai-completion";
 import {
   Select,
@@ -19,23 +17,29 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { createAbstractPrompt } from "@/prompts/create_abstract_prompt";
 
-export default function ThreadPage({ params }) {
+interface ThreadPageProps {
+  params: {
+    slug: string;
+  };
+}
+
+export default function ThreadPage({ params }: ThreadPageProps) {
   const optionValues = {
-    "초안 작성하기": "위의 내용을 기반으로 스레드 초안을 작성해주세요.",
+    "초안 작성하기": "위의 내용을 기반으로 스레드 초안을 작성해줘.",
     수정하기: "위의 내용을 더 간결하게 다듬어주세요",
   };
 
+  const router = useRouter();
+  const { slug } = params;
+  const [loading, setLoading] = useState(false);
   const [leftTopContent, setLeftTopContent] = useState("");
   const [selectedOption, setSelectedOption] = useState("초안 작성하기");
   const [leftBottomContent, setLeftBottomContent] = useState(
     optionValues["초안 작성하기"]
   );
-  const [rightContent, setRightContent] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { slug } = params;
-  const router = useRouter();
 
   useEffect(() => {
     setLeftBottomContent(optionValues[selectedOption] || "");
@@ -53,9 +57,13 @@ export default function ThreadPage({ params }) {
 
     setLoading(true);
     setError(null);
+    const prompt = createAbstractPrompt({
+      reference: leftTopContent,
+      user_prompt: leftBottomContent,
+    });
 
     const content = await getOpenAICompletion({
-      prompt: leftTopContent + "\n" + leftBottomContent,
+      prompt: prompt,
     });
     try {
       const threadData = await fetchThreadBySlug(slug);
